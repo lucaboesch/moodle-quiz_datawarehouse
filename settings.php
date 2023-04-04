@@ -23,12 +23,23 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+global $ADMIN;
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('quiz_datawarehouse_settings', new lang_string('pluginname', 'quiz_datawarehouse'));
 
-    // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
-    if ($ADMIN->fulltree) {
-        // TODO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
-    }
+    $settings->add(new admin_setting_heading(
+        'quiz_datawarehouse/supportedversions',
+        '',
+        $OUTPUT->notification(get_string('setting:supportedversions', 'quiz_datawarehouse'), 'warning')));
+}
+
+if (has_capability('quiz/datawarehouse:managequeries', context_system::instance())) {
+    $ADMIN->add('modsettingsquizcat',
+        new admin_externalpage(
+            'quiz_datawarehouse/query',
+            get_string('manage_queries', 'quiz_datawarehouse'),
+            new moodle_url('/mod/quiz/report/datawarehouse/query.php'),
+            'quiz/datawarehouse:managequeries'
+        )
+    );
 }

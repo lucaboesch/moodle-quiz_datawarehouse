@@ -22,13 +22,34 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addquery'] = 'Add new query';
+$string['cantdelete'] = 'The query can\'t be deleted.';
+$string['cantedit'] = 'The query can\'t be edited.';
 $string['datawarehouse'] = 'Data warehouse export';
+$string['datawarehousereport'] = 'Quiz data warehouse report';
+$string['description'] = 'Description';
+$string['editquery'] = 'Edit query';
+$string['enabled'] = 'Enabled';
+$string['event:querycreated'] = 'Quiz data warehouse query was created';
+$string['event:querydeleted'] = 'Quiz data warehouse query was deleted';
+$string['event:querydisabled'] = 'Quiz data warehouse query was disabled';
+$string['event:queryenabled'] = 'Quiz data warehouse query was enabled';
+$string['event:queryupdated'] = 'Quiz data warehouse query was updated';
+$string['invalidquery'] = "Invalid quiz data warehouse query";
+$string['manage_queries'] = 'Quiz data warehouse report queries';
+$string['managequeries'] = 'Manage queries';
+$string['name'] = 'Name';
+$string['namerequired'] = 'A name is required';
+$string['newquery'] = 'New query';
 $string['pluginname'] = 'Quiz data warehouse export';
 $string['plugindescription'] = '<p>Checks code against some aspects of the {$a->link}.</p>
 <p>Enter a path relative to the Moodle code root, for example: {$a->path}.</p>
 <p>You can enter either a specific PHP file, or to a folder to check all the files it contains.
 Multiple entries are supported (files or folders), one per line.</p>
 <p>To exclude files, a comma separated list of substr matching paths can be used, for example: {$a->excludeexample}. Asterisks are allowed as wildchars at any place.</p>';
+$string['querysql'] = 'Query';
+$string['setting:supportedversions'] = 'Please note that the following minimum versions of Moodle are required: 4.1.';
+$string['used'] = 'In use';
 
 // PRIVACY.
 $string['privacy:metadata'] = 'The quiz datawarehouse plugin does not store any personal data about any user.';

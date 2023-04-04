@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Install script for plugin.
  *
  * @package     quiz_datawarehouse
  * @copyright   2023 Luca Bösch <luca.boesch@bfh.ch>
@@ -24,8 +24,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'quiz_datawarehouse';
-$plugin->release = '0.1.1';
-$plugin->version = 2023040400;
-$plugin->requires = 2022112800;
-$plugin->maturity = MATURITY_ALPHA;
+require_once($CFG->dirroot  . '/mod/quiz/report/datawarehouse/lib.php');
+
+/**
+ * Custom code to be run on installing the plugin.
+ */
+function xmldb_quiz_datawarehouse_install() {
+    global $DB;
+
+    return true;
+}

@@ -50,8 +50,8 @@ class quiz_datawarehouse_settings_form extends moodleform {
         if (get_config('quiz_datawarehouse', 'chooseablefilestructure')) {
 
             $mform->addElement('select', 'zip_inonefolder', get_string('zip_inonefolder', 'quiz_datawarehouse'), array(
-                0 => get_string('no', 'quiz_datawarehouse'),
-                1 => get_string('yes', 'quiz_datawarehouse')
+                0 => get_string('no'),
+                1 => get_string('yes')
             ));
 
             $mform->addHelpButton('zip_inonefolder', 'zip_inonefolder', 'quiz_datawarehouse');
@@ -61,8 +61,8 @@ class quiz_datawarehouse_settings_form extends moodleform {
 
             $mform->addElement('select', 'chooseableanonymization',
                 get_string('adminsetting_anonymizedownload', 'quiz_datawarehouse'), array(
-                    0 => get_string('no', 'quiz_datawarehouse'),
-                    1 => get_string('yes', 'quiz_datawarehouse')
+                    0 => get_string('no'),
+                    1 => get_string('yes')
                 ));
 
             $mform->addHelpButton('chooseableanonymization', 'adminsetting_anonymizedownload', 'quiz_datawarehouse');

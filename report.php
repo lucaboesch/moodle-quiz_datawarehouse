@@ -231,7 +231,8 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
             get_string('moodlecodingguidelines', 'local_codechecker'));
         $a->path = html_writer::tag('tt', 'local/codechecker');
         $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
-        echo html_writer::tag('div', get_string('plugindescription', 'quiz_datawarehouse', $a), array('class' => 'plugindescription'));
+        echo html_writer::tag('div', get_string('plugindescription', 'quiz_datawarehouse', $a),
+            array('class' => 'plugindescription'));
 
         $formdata       = new stdClass;
         $formdata->mode = optional_param('mode', 'datawarehouse', PARAM_ALPHA);
@@ -270,7 +271,7 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
         raise_memory_limit(MEMORY_EXTRA);
         core_php_time_limit::raise();
 
-        $contextid      = context_course::instance($course->id)->id;
+        $queryid      = context_course::instance($course->id)->id;
         $zipcontent     = array();
         $zipname        = clean_filename("$course->fullname - $quiz->name - $cmid.zip");
         $zipname        = preg_replace('/[^a-zA-Z0-9.]/', '_', $zipname);
@@ -305,7 +306,7 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
             $path = $this->datawarehouse_create_pathes($data, $attempt, $questionnumber);
 
             $txtfile = $this->datawarehouse_create_txtfile(
-                $contextid,
+                $queryid,
                 $attempt,
                 $course->fullname,
                 $course->id,
@@ -409,7 +410,7 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
         $fileinfo = array(
             'contextid' => $contextid,
             'component' => 'quiz_datawarehouse',
-            'filearea'  => 'content',
+            'filearea'  => 'querysql',
             'itemid'    => 0,
             'filepath'  => '/',
             'filename'  => 'USERINFO.txt');
