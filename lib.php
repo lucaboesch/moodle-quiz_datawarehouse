@@ -47,3 +47,16 @@ function quiz_datawarehouse_pluginfile($course, $cm, $context, $filearea, $args,
     send_stored_file($file, null, 0, $forcedownload, $options);
     return true;
 }
+
+/**
+ * Gives out the highest itemid for files saved in the quiz_datawarehouse component data file area.
+ *
+ * @return int the highest itemid
+ * @throws dml_exception
+ */
+function get_file_itemid() :int {
+    global $DB;
+    $highestitemid = $DB->get_field_sql("SELECT max(itemid) FROM {files} WHERE component = 'quiz_datawarehouse'
+        AND filearea = 'data'");
+    return $highestitemid ?: 0;
+}
