@@ -137,10 +137,19 @@ class query_controller {
      * Print out all records in a table.
      */
     protected function display_all_records() {
-        $records = query::get_records([], 'id');
+        $records = $this->get_sorted_queries_list();
 
         $table = new query_list();
         $table->display($records);
+    }
+
+    /**
+     * Return a list of queriessorted by the order defined in the admin interface
+     *
+     * @return static[] The list of queries
+     */
+    public function get_sorted_queries_list() {
+        return query::get_records([], 'sortorder');
     }
 
     /**
@@ -342,7 +351,7 @@ class query_controller {
     protected function print_add_button() {
         echo $this->output->single_button(
             new \moodle_url(static::get_base_url(), ['action' => self::ACTION_ADD]),
-            $this->get_create_button_text()
+            $this->get_create_button_text(), 'post', ['class' => 'mb-3']
         );
     }
 
@@ -362,6 +371,53 @@ class query_controller {
      */
     protected function footer() {
         echo $this->output->footer();
+    }
+
+    /**
+     * Change the order of this query.
+     *
+     * @param string $querytomove - The query to move
+     * @param string $dir - up or down
+     * @return string The next page to display
+     */
+    public function move_query($querytomove, $dir) {
+        // Get a list of the current queries.
+        $queries = $this->get_sorted_queries_list();
+
+        $currentindex = 0;
+
+        // Throw away the keys.
+        $queries = array_values($queries);
+
+        // Find this query in the list.
+        foreach ($queries as $key => $query) {
+            if ($query == $querytomove) {
+                $currentindex = $key;
+                break;
+            }
+        }
+
+        // Make the switch.
+        if ($dir == 'up') {
+            if ($currentindex > 0) {
+                $tempquery = $queries[$currentindex - 1];
+                $queries[$currentindex - 1] = $queries[$currentindex];
+                $queries[$currentindex] = $tempquery;
+            }
+        } else if ($dir == 'down') {
+            if ($currentindex < (count($queries) - 1)) {
+                $tempquery = $queries[$currentindex + 1];
+                $queries[$currentindex + 1] = $queries[$currentindex];
+                $queries[$currentindex] = $tempquery;
+            }
+        }
+
+        // Save the new normal order.
+        foreach ($queries as $key => $query) {
+            $query = $this->get_instance($query["id"]);
+            $query->save();
+        }
+        $this->view();
     }
 
     /**

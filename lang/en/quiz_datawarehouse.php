@@ -25,6 +25,8 @@
 $string['addquery'] = 'Add new query';
 $string['cantdelete'] = 'The query can\'t be deleted.';
 $string['cantedit'] = 'The query can\'t be edited.';
+$string['confirmqueryremovalquestion'] = 'Are you sure you want to remove this query?';
+$string['confirmqueryremovaltitle'] = 'Confirm query removal?';
 $string['datawarehouse'] = 'Data warehouse export';
 $string['datawarehousereport'] = 'Quiz data warehouse report';
 $string['description'] = 'Description';
