@@ -31,6 +31,7 @@ if ($hassiteconfig) {
         'quiz_datawarehouse/supportedversions',
         '',
         $OUTPUT->notification(get_string('setting:supportedversions', 'quiz_datawarehouse'), 'warning')));
+    // TODO: print the session token.
 }
 
 if (has_capability('quiz/datawarehouse:managequeries', context_system::instance())) {

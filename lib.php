@@ -23,45 +23,27 @@
  */
 
 /**
- * Serve the files.
+ * Serves any files associated with the quiz datawarehouse plugin.
  *
- * @param stdClass $course the course object
- * @param stdClass $cm the course module object
- * @param \context $context the context
- * @param string $filearea the name of the file area
- * @param array $args extra arguments (itemid, path)
- * @param bool $forcedownload whether or not force download
- * @param array $options additional options affecting the file serving
- * @return bool false if the file not found, just send the file otherwise and do not return anything
+ * @param stdClass $course Course object
+ * @param stdClass $cm Course module object
+ * @param context $context Context
+ * @param string $filearea File area for data privacy
+ * @param array $args Arguments
+ * @param bool $forcedownload If we are forcing the download
+ * @param array $options More options
+ * @return bool Returns false if we don't find a file.
  */
-function quiz_datawarehouse_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
-    if ($context->contextlevel != CONTEXT_MODULE) {
+function quiz_datawarehouse_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []): bool {
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
-    }
-
-    if ($filearea !== 'filemanager_sebconfigfile') {
-        return false;
-    }
-
-    require_login($course, true, $cm);
-    if (!has_capability('quizaccess/seb:manage_filemanager_sebconfigfile', $context)) {
-        return false;
-    }
-
-    $itemid = array_shift($args);
-    $filename = array_pop($args);
-
-    if (!$args) {
-        $filepath = '/';
-    } else {
-        $filepath = '/' .implode('/', $args) . '/';
     }
 
     $fs = get_file_storage();
-    $file = $fs->get_file($context->id, 'quiz_datawarehouse', $filearea, $itemid, $filepath, $filename);
+    $file = $fs->get_file($context->id, 'quiz_datawarehouse', $filearea, $args[0], '/', $args[1]);
     if (!$file) {
-        return false;
+        return false; // No such file.
     }
-
-    send_stored_file($file, 0, 0, $forcedownload, $options);
+    send_stored_file($file, null, 0, $forcedownload, $options);
+    return true;
 }

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Capability definitions for the quiz data warehouse report.
+ * Quiz report data warehouse external functions and service definitions.
  *
  * @package     quiz_datawarehouse
  * @copyright   2023 Luca Bösch <luca.boesch@bfh.ch>
@@ -24,27 +24,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'quiz/datawarehouse:view' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        ),
-    ),
-    'quiz/datawarehouse:viewfiles' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        ),
-    ),
-    'quiz/datawarehouse:managequeries' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        ),
-    ),
-);
+// We define the web service functions to install.
+$functions = [
+    'quiz_datawarehouse_get_all_files' => [
+        'classname'    => 'quiz_datawarehouse\external\get_all_files',
+        'description'  => 'List all files present in the datawarehouse filearea',
+        'ajax'         => false,
+        'type'         => 'read',
+        'capabilities' => 'quiz/datawarehouse:viewfiles'
+    ],
+];
 
+// We define the services to install as pre-build services. A pre-build service is not editable by administrator.
+$services = array(
+    'quiz report datawarehouse functionalities' => [
+        'functions' => ['quiz_datawarehouse_get_all_files'],
+        'restrictedusers' => 0,
+        'enabled' => 1,
+    ]
+);
