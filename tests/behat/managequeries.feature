@@ -1,5 +1,5 @@
 @quiz @quiz_datawarehouse
-Feature: Configuration the Data warehouse report
+Feature: Configuration of the Data warehouse report
   In order to have my teachers export quiz data
   As an admin
   I need to manage the available queries

@@ -15,22 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Install script for plugin.
- *
- * @package     quiz_datawarehouse
- * @copyright   2023 Luca Bösch <luca.boesch@bfh.ch>
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Post-install script for the quiz data warehouse report.
+ * @package    quiz_datawarehouse
+ * @copyright  2023 Luca Bösch <luca.boesch@bfh.ch>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot  . '/mod/quiz/report/datawarehouse/lib.php');
-
 /**
- * Custom code to be run on installing the plugin.
+ * Post-install script
  */
 function xmldb_quiz_datawarehouse_install() {
     global $DB;
 
-    return true;
+    $record = new stdClass();
+    $record->name         = 'datawarehouse';
+    $record->displayorder = '1800';
+    $record->capability   = 'quiz/datawarehouse:view';
+
+    $DB->insert_record('quiz_reports', $record);
 }
