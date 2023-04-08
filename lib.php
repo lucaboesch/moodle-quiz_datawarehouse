@@ -60,3 +60,23 @@ function get_file_itemid() :int {
         AND filearea = 'data'");
     return $highestitemid ?: 0;
 }
+
+/**
+ * Writes a quiz report datawarehouse file.
+ *
+ * @param stdClass|array $filerecord contains itemid, filepath, filename and optionally other
+ *      attributes of the new file
+ * @param string $content the content of the new file
+ * @return bool
+ * @throws file_exception
+ * @throws stored_file_creation_exception
+ */
+function write_datawarehouse_file($filerecord, $content) :bool {
+    $fs = get_file_storage();
+    // Create a file and save it.
+    if (($fs->create_file_from_string($filerecord, $content)) != null) {
+        return true;
+    } else {
+        return false;
+    }
+}

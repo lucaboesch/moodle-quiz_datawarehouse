@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/formslib.php');
+require_once(__DIR__ . '/lib.php');
 
 /**
  * Settingsform for datawarehouse report.
@@ -78,5 +79,19 @@ class quiz_datawarehouse_settings_form extends moodleform {
         $mform->setType('mode', PARAM_ALPHA);
 
         $mform->addElement('submit', 'downloadfiles', get_string('download', 'quiz_datawarehouse'));
+
+        $fs = get_file_storage();
+        $newitemid = get_file_itemid() + 1;
+        $filerecord = [
+            'component' => 'quiz_datawarehouse',
+            'contextid' => \context_system::instance()->id,
+            'filearea' => 'data',
+            'itemid' => $newitemid,
+            'filepath' => '/',
+            'filename' => 'file.txt'
+        ];
+
+        // Create a file and save it.
+        write_datawarehouse_file($filerecord, 'File content');
     }
 }

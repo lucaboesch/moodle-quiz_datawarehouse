@@ -43,12 +43,11 @@ class file_storage_test extends \advanced_testcase {
      * @covers \quiz_datawarehouse\local\form\query
      */
     public function test_file_area() {
-        global $CFG, $USER, $DB;
+        global $DB;
 
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        $fs = get_file_storage();
         $newitemid = get_file_itemid() + 1;
         $filerecord = [
             'component' => 'quiz_datawarehouse',
@@ -60,7 +59,7 @@ class file_storage_test extends \advanced_testcase {
         ];
 
         // Create a file and save it.
-        $fs->create_file_from_string($filerecord, 'File content');
+        write_datawarehouse_file($filerecord, 'File content');
 
         // Control that it exists.
         $files = $DB->get_records('files', ['component' => 'quiz_datawarehouse', 'filearea' => 'data',

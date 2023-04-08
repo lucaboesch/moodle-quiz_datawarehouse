@@ -27,8 +27,8 @@ namespace quiz_datawarehouse;
 /**
  * Helper class.
  *
- * @copyright  2020 Catalyst IT
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright   2023 Luca Bösch <luca.boesch@bfh.ch>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
     /**
