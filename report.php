@@ -204,6 +204,36 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
         $data = $mform->get_data();
 
         if ($data) {
+            // The report generation has been triggered.
+
+            $newitemid = get_file_itemid() + 1;
+            $filerecord = [
+                'component' => 'quiz_datawarehouse',
+                'contextid' => \context_system::instance()->id,
+                'filearea' => 'data',
+                'itemid' => $newitemid,
+                'filepath' => '/',
+                'filename' => 'file.txt'
+            ];
+
+            // Create a file and save it.
+            write_datawarehouse_file($filerecord, 'File content');
+
+            echo $this->print_header_and_tabs($cm, $course, $quiz, 'datawarehouse');
+            $a = new stdClass();
+            $a->link = html_writer::link('https://moodledev.io/general/development/policies/codingstyle',
+                get_string('moodlecodingguidelines', 'local_codechecker'));
+            $a->path = html_writer::tag('tt', 'local/codechecker');
+            $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
+            echo html_writer::tag('div', get_string('plugindescription', 'quiz_datawarehouse', $a),
+                array('class' => 'plugindescription'));
+            $baseurl = new moodle_url($PAGE->url);
+            $url = new moodle_url($baseurl, array('id' => $cm->id , 'mode' => 'datawarehouse'));
+            echo html_writer::tag('div', html_writer::link($url, get_string('generateanotherexport', 'quiz_datawarehouse')),
+                array('class' => 'generateanotherexport'));
+
+            // phpcs:disable
+            /*
             $downloadclicked = !empty($data->downloadfiles);
 
             if ($downloadclicked) {
@@ -222,33 +252,33 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
                         $configfileareas);
                 }
             }
+            */
+            // phpcs:enable
+
+        } else {
+            // Prompt to trigger the report generation.
+            echo $this->print_header_and_tabs($cm, $course, $quiz, 'datawarehouse');
+
+            $a = new stdClass();
+            $a->link = html_writer::link('https://moodledev.io/general/development/policies/codingstyle',
+                get_string('moodlecodingguidelines', 'local_codechecker'));
+            $a->path = html_writer::tag('tt', 'local/codechecker');
+            $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
+            echo html_writer::tag('div', get_string('plugindescription', 'quiz_datawarehouse', $a),
+                array('class' => 'plugindescription'));
+
+            $formdata       = new stdClass;
+            $formdata->mode = optional_param('mode', 'datawarehouse', PARAM_ALPHA);
+            $formdata->id   = optional_param('id', $quiz->id, PARAM_INT);
+
+            $mform->set_data($formdata);
+            $mform->display();
         }
 
-        echo $this->print_header_and_tabs($cm, $course, $quiz, 'datawarehouse');
-
-        $a = new stdClass();
-        $a->link = html_writer::link('https://moodledev.io/general/development/policies/codingstyle',
-            get_string('moodlecodingguidelines', 'local_codechecker'));
-        $a->path = html_writer::tag('tt', 'local/codechecker');
-        $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
-        echo html_writer::tag('div', get_string('plugindescription', 'quiz_datawarehouse', $a),
-            array('class' => 'plugindescription'));
-
-        $formdata       = new stdClass;
-        $formdata->mode = optional_param('mode', 'datawarehouse', PARAM_ALPHA);
-        $formdata->id   = optional_param('id', $quiz->id, PARAM_INT);
-
-        $mform->set_data($formdata);
-        $mform->display();
-
+        // phpcs:disable
         if ($downloadclicked) {
-            foreach ($validqtypes["errors"] as $error) {
-                echo $OUTPUT->notification($error);
-            }
-
-            echo !$userattempts ? $OUTPUT->notification(get_string('response_noattempts', 'quiz_datawarehouse')) : null;
-            echo !$filesdownloaded ? $OUTPUT->notification(get_string('response_nofiles', 'quiz_datawarehouse')) : null;
         }
+        // phpcs:enable
         return true;
     }
 

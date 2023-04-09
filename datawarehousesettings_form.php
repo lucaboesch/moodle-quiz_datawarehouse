@@ -41,6 +41,8 @@ class quiz_datawarehouse_settings_form extends moodleform {
 
         $mform = $this->_form;
 
+        // phpcs:disable
+        /*
         $showdownloadsettings = get_config('quiz_datawarehouse', 'chooseablefilestructure') == 1
             || get_config('quiz_datawarehouse', 'chooseableanonymization') == 1;
 
@@ -72,26 +74,14 @@ class quiz_datawarehouse_settings_form extends moodleform {
         if ($showdownloadsettings) {
             $mform->closeHeaderBefore('downloadfiles');
         }
+        */
+        // phpcs:enable
 
         $mform->addElement('hidden', 'id', '');
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'mode', '');
         $mform->setType('mode', PARAM_ALPHA);
 
-        $mform->addElement('submit', 'downloadfiles', get_string('download', 'quiz_datawarehouse'));
-
-        $fs = get_file_storage();
-        $newitemid = get_file_itemid() + 1;
-        $filerecord = [
-            'component' => 'quiz_datawarehouse',
-            'contextid' => \context_system::instance()->id,
-            'filearea' => 'data',
-            'itemid' => $newitemid,
-            'filepath' => '/',
-            'filename' => 'file.txt'
-        ];
-
-        // Create a file and save it.
-        write_datawarehouse_file($filerecord, 'File content');
+        $mform->addElement('submit', 'downloadfiles', get_string('generate', 'quiz_datawarehouse'));
     }
 }
