@@ -26,7 +26,7 @@ namespace quiz_datawarehouse;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../lib.php');
+require_once(__DIR__ . '/../locallib.php');
 
 /**
  * Unit test for writing to file area.

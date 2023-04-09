@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/mod/quiz/report/attemptsreport.php');
 require_once($CFG->dirroot . '/mod/quiz/report/datawarehouse/datawarehousesettings_form.php');
 
 /**
- * datawarehouse helps teachers to download files submitted within quizattempts
+ * The quiz data warehouse report helps teachers export quiz data from Moodle to a Data Warehouse.
  */
 class quiz_datawarehouse_report extends quiz_attempts_report {
 
@@ -217,7 +217,6 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
                 'filepath' => '/',
                 'filename' => $filename
             ];
-
             // Create a file and save it.
             write_datawarehouse_file($filerecord, $filecontent);
 
@@ -440,7 +439,11 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
      * @return object $file
      */
     public function datawarehouse_create_txtfile($queryid, $cm, $course, $quiz) {
-        return 'File content';
+        global $DB;
+        $sql = "SELECT 'File content' AS content";
+        $params = [];
+        $results = $DB->get_records_sql($sql, $params);
+        return "File content";
     }
 
     /**
