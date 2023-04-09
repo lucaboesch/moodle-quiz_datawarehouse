@@ -207,6 +207,7 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
             // The report generation has been triggered.
 
             $filename = $this->datawarehouse_get_filename($cm, $course, $quiz);
+            $filecontent = $this->datawarehouse_create_txtfile(1, $cm, $course, $quiz);
             $newitemid = get_file_itemid() + 1;
             $filerecord = [
                 'component' => 'quiz_datawarehouse',
@@ -218,7 +219,7 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
             ];
 
             // Create a file and save it.
-            write_datawarehouse_file($filerecord, 'File content');
+            write_datawarehouse_file($filerecord, $filecontent);
 
             echo $this->print_header_and_tabs($cm, $course, $quiz, 'datawarehouse');
             $a = new stdClass();
@@ -430,77 +431,23 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
     }
 
     /**
-     * Creates a text file that contains user information
-     * @param int $contextid
-     * @param object $attempt
-     * @param string $coursename
-     * @param int $courseid
-     * @param string $questionname
-     * @param int $questionid
-     * @param object $data
+     * Creates a text that contains the query result
+     *
+     * @param int $queryid the query to run.
+     * @param \stdClass|\cm_info $cm the course-module for this quiz.
+     * @param \stdClass $course the course for this quiz.
+     * @param \quiz $quiz this quiz.
      * @return object $file
      */
-    public function datawarehouse_create_txtfile($contextid, $attempt, $coursename, $courseid, $questionname, $questionid, $data) {
-
-        $fs = get_file_storage();
-
-        $fileinfo = array(
-            'contextid' => $contextid,
-            'component' => 'quiz_datawarehouse',
-            'filearea'  => 'querysql',
-            'itemid'    => 0,
-            'filepath'  => '/',
-            'filename'  => 'USERINFO.txt');
-
-        $file = $fs->get_file(
-            $fileinfo['contextid'],
-            $fileinfo['component'],
-            $fileinfo['filearea'],
-            $fileinfo['itemid'],
-            $fileinfo['filepath'],
-            $fileinfo['filename']);
-
-        if ($file) {
-            $file->delete();
-        }
-
-        if (!$attempt->idnumber || $attempt->idnumber == null || $attempt->idnumber == "") {
-            $attempt->idnumber = get_string('textfile_notavailable', 'quiz_datawarehouse');
-        }
-
-        $username   = "$attempt->firstname $attempt->lastname";
-        $email      = $attempt->email;
-
-        if (isset($data->chooseableanonymization)) {
-            if ($data->chooseableanonymization == 1) {
-                $username   = get_string('texfile_anonymized', 'quiz_datawarehouse');
-                $email      = get_string('texfile_anonymized', 'quiz_datawarehouse');
-            }
-        }
-
-        $filecontent    = "User:     $username (Student ID: $attempt->idnumber, User ID: $attempt->userid)\r\n" .
-            "E-Mail:   $email\r\n" .
-            "Question: $questionname (Question ID: $questionid)\r\n" .
-            "Course:   $coursename (Course ID: $courseid)";
-
-        $fs->create_file_from_string($fileinfo, $filecontent);
-
-        $file = $fs->get_file(
-            $fileinfo['contextid'],
-            $fileinfo['component'],
-            $fileinfo['filearea'],
-            $fileinfo['itemid'],
-            $fileinfo['filepath'],
-            $fileinfo['filename']);
-
-        return $file;
+    public function datawarehouse_create_txtfile($queryid, $cm, $course, $quiz) {
+        return 'File content';
     }
 
     /**
      * Generates and returns the data warehouse report query result file name.
      *
      * @param \stdClass|\cm_info $cm the course-module for this quiz.
-     * @param \stdClass $course the course we are in.
+     * @param \stdClass $course the course for this quiz.
      * @param \quiz $quiz this quiz.
      * @return string
      * @throws coding_exception
