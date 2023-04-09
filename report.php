@@ -206,6 +206,7 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
         if ($data) {
             // The report generation has been triggered.
 
+            $filename = $this->datawarehouse_get_filename($cm, $course, $quiz);
             $newitemid = get_file_itemid() + 1;
             $filerecord = [
                 'component' => 'quiz_datawarehouse',
@@ -213,7 +214,7 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
                 'filearea' => 'data',
                 'itemid' => $newitemid,
                 'filepath' => '/',
-                'filename' => 'file.txt'
+                'filename' => $filename
             ];
 
             // Create a file and save it.
@@ -493,5 +494,31 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
             $fileinfo['filename']);
 
         return $file;
+    }
+
+    /**
+     * Generates and returns the data warehouse report query result file name.
+     *
+     * @param \stdClass|\cm_info $cm the course-module for this quiz.
+     * @param \stdClass $course the course we are in.
+     * @param \quiz $quiz this quiz.
+     * @return string
+     * @throws coding_exception
+     */
+    public function datawarehouse_get_filename($cm, $course, $quiz) :string {
+        global $USER;
+        $timezone = \core_date::get_user_timezone_object();
+        $timestamp = time();
+        $calendartype = \core_calendar\type_factory::get_calendar_instance();
+        $timestamparray = $calendartype->timestamp_to_date_array($timestamp, $timezone);
+        $timestamptext = $timestamparray['year'] . "-" .
+            sprintf("%02d", $timestamparray['mon']) . "-" .
+            sprintf("%02d", $timestamparray['mday']) . "-" .
+            sprintf("%02d", $timestamparray['hours']) . "-" .
+            sprintf("%02d", $timestamparray['minutes']) . "-" .
+            sprintf("%02d", $timestamparray['seconds']);
+
+        $queryname = "THE query";
+        return $USER->id . '-' . $quiz->id . '-' . str_replace(' ', '_', $queryname) . '-' . $timestamp . '-' . $timestamptext;
     }
 }
