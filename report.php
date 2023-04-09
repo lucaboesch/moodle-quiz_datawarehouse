@@ -231,6 +231,12 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
             $url = new moodle_url($baseurl, array('id' => $cm->id , 'mode' => 'datawarehouse'));
             echo html_writer::tag('div', html_writer::link($url, get_string('generateanotherexport', 'quiz_datawarehouse')),
                 array('class' => 'generateanotherexport'));
+            $a = new stdClass();
+            $a->coursemoduleid = $cm->id;
+            $a->quizid = $quiz->id;
+            $a->courseid = $course->id;
+            echo html_writer::tag('div', html_writer::link($url, get_string('quizinfo', 'quiz_datawarehouse', $a)),
+                array('class' => 'generateanotherexport'));
 
             // phpcs:disable
             /*

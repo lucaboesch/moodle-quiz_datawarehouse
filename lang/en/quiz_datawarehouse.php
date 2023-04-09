@@ -55,6 +55,7 @@ $string['plugindescription'] = '<p>Checks code against some aspects of the {$a->
 Multiple entries are supported (files or folders), one per line.</p>
 <p>To exclude files, a comma separated list of substr matching paths can be used, for example: {$a->excludeexample}. Asterisks are allowed as wildchars at any place.</p>';
 $string['querysql'] = 'Query';
+$string['quizinfo'] = 'This quiz has the coursemodule id {$a->coursemoduleid}. It is in the course with id {$a->courseid} and the quiz id is {$a->quizid}.';
 $string['setting:supportedversions'] = 'Please note that the following minimum versions of Moodle are required: 4.1.';
 $string['used'] = 'In use';
 
