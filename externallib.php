@@ -15,31 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Quiz report data warehouse external functions and service definitions.
+ * Quiz report data warehouse external web service functions.
  *
  * @package     quiz_datawarehouse
  * @copyright   2023 Luca Bösch <luca.boesch@bfh.ch>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-// We define the web service functions to install.
-$functions = [
-    'quiz_datawarehouse_get_all_files' => [
-        'classname'    => 'quiz_datawarehouse\external\get_all_files',
-        'description'  => 'List all files present in the datawarehouse filearea',
-        'ajax'         => false,
-        'type'         => 'read',
-        'capabilities' => 'quiz/datawarehouse:viewfiles'
-    ],
-];
+require_once($CFG->libdir . "/externallib.php");
 
-// We define the services to install as pre-build services. A pre-build service is not editable by administrator.
-$services = array(
-    'Quiz report datawarehouse functionalities' => [
-        'functions' => ['quiz_datawarehouse_get_all_files'],
-        'restrictedusers' => 0,
-        'enabled' => 1,
-    ]
-);
+/**
+ * Class quiz_datawarehouse_external
+ */
+class quiz_datawarehouse_external extends external_api {
+}
