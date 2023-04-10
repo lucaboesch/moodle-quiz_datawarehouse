@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'quiz_datawarehouse';
-$plugin->release = '0.1.1';
-$plugin->version = 2023040400;
+$plugin->release = '0.1.2';
+$plugin->version = 2023041001;
 $plugin->requires = 2022112800;
 $plugin->maturity = MATURITY_ALPHA;

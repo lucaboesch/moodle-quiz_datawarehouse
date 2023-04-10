@@ -34,7 +34,7 @@ $capabilities = array(
     ),
     'quiz/datawarehouse:viewfiles' => array(
         'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
+        'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         ),
