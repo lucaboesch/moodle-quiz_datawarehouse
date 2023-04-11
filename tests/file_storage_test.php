@@ -27,9 +27,10 @@ namespace quiz_datawarehouse;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../locallib.php');
+require_once($CFG->libdir . '/externallib.php');
 
 /**
- * Unit test for writing to file area.
+ * Unit test for writing to and reading from file area.
  *
  * @package     quiz_datawarehouse
  * @copyright   2023 Luca Bösch <luca.boesch@bfh.ch>
@@ -38,34 +39,60 @@ require_once(__DIR__ . '/../locallib.php');
 class file_storage_test extends \advanced_testcase {
 
     /**
-     * Tests saving in the file area.
+     * Tests saving and retrieving in the file area.
      *
      * @covers \quiz_datawarehouse\local\form\query
      */
     public function test_file_area() {
-        global $DB;
+        global $DB, $CFG;
 
         $this->resetAfterTest();
         $this->setAdminUser();
 
+        $context = \context_system::instance()->id;
+        $component = 'quiz_datawarehouse';
+        $filearea = 'data';
         $newitemid = get_file_itemid() + 1;
+        $timemodified = 102030405;
+        $content = 'File content';
+        $filesize = strlen($content);
         $filerecord = [
-            'component' => 'quiz_datawarehouse',
-            'contextid' => \context_system::instance()->id,
-            'filearea' => 'data',
-            'itemid' => $newitemid,
+            'filename' => 'file.txt',
             'filepath' => '/',
-            'filename' => 'file.txt'
+            'mimetype'      => 'text/plain',
+            'filesize'      => $filesize,
+            'component' => $component,
+            'contextid' => $context,
+            'filearea' => $filearea,
+            'timemodified'  => $timemodified,
+            'itemid' => $newitemid,
         ];
 
         // Create a file and save it.
-        write_datawarehouse_file($filerecord, 'File content');
+        write_datawarehouse_file($filerecord, $content);
 
         // Control that it exists.
-        $files = $DB->get_records('files', ['component' => 'quiz_datawarehouse', 'filearea' => 'data',
-            'contextid' => \context_system::instance()->id, 'itemid' => $newitemid, 'filename' => 'file.txt']);
+        $files = $DB->get_records('files', ['component' => $component, 'filearea' => $filearea,
+            'contextid' => $context, 'itemid' => $newitemid, 'filename' => 'file.txt']);
         $this->assertEquals(1, count($files));
 
         // Now retrieve it.
+        $expectedfiles[] = array(
+            'filename' => 'file.txt',
+            'filepath' => '/',
+            'fileurl' => "{$CFG->wwwroot}/webservice/pluginfile.php/{$context}/{$component}/{$filearea}/{$newitemid}/file.txt",
+            'timemodified' => $timemodified,
+            'filesize' => $filesize,
+            'mimetype' => 'text/plain',
+            'isexternalfile' => false,
+        );
+
+        // Get all the files for the area.
+        $files = \external_util::get_area_files($context, $component, $filearea, false);
+        $this->assertEquals($expectedfiles, $files);
+
+        // Get just the file indicated by $itemid.
+        $files = \external_util::get_area_files($context, $component, $filearea, $newitemid);
+        $this->assertEquals($expectedfiles, $files);
     }
 }
