@@ -50,6 +50,28 @@ class get_all_files extends \external_api {
     }
 
     /**
+     * Return a list of all datawarehouse files.
+     *
+     * @return array of files
+     */
+    public static function execute() {
+        $context = \context_system::instance()->id;
+        $component = 'quiz_datawarehouse';
+        $filearea = 'data';
+
+        // Get all the files for the area.
+        $files = \external_util::get_area_files($context, $component, $filearea, false);
+
+        // Fiddle in the itemid which is in the fileurl.
+        foreach ($files as &$file) {
+            $parts = explode('/', $file["fileurl"]);
+            $secondlastpart = (int) count($parts) - 2;
+            $file["itemid"] = (int) $parts[$secondlastpart];
+        }
+        return $files;
+    }
+
+    /**
      * Return for calling the quiz_datawarehouse get_all_files function.
      *
      * @return external_multiple_structure
@@ -57,54 +79,12 @@ class get_all_files extends \external_api {
     public static function execute_returns() {
         return new external_multiple_structure(
             new external_single_structure([
-                'id' => new external_value(PARAM_INT, 'group record id'),
-                'courseid' => new external_value(PARAM_INT, 'id of course'),
-                'name' => new external_value(PARAM_TEXT, 'multilang compatible name, course unique'),
-                'description' => new external_value(PARAM_RAW, 'group description text'),
-                'enrolmentkey' => new external_value(PARAM_RAW, 'group enrol secret phrase'),
+                'filename' => new external_value(PARAM_TEXT, 'The file name'),
+                'fileurl' => new external_value(PARAM_TEXT, 'The file URL'),
+                'timemodified' => new external_value(PARAM_INT, 'The file modified timestamp'),
+                'filesize' => new external_value(PARAM_INT, 'The file size'),
+                'itemid' => new external_value(PARAM_INT, 'The file item ID'),
             ])
         );
-    }
-
-    /**
-     * Get all files.
-     *
-     * @param array $groups array of group description arrays (with keys groupname and courseid)
-     * @return array of newly created groups
-     */
-    public static function execute($groups) {
-        global $CFG, $DB;
-        require_once("$CFG->dirroot/group/lib.php");
-
-        $params = self::validate_parameters(self::execute_parameters(), ['groups' => $groups]);
-
-        $transaction = $DB->start_delegated_transaction(); // If an exception is thrown in the below code, all DB queries in this
-        // code will be rolled back.
-
-        $groups = array();
-
-        foreach ($params['groups'] as $group) {
-            $group = (object)$group;
-
-            if (trim($group->name) == '') {
-                throw new invalid_parameter_exception('Invalid group name');
-            }
-            if ($DB->get_record('groups', ['courseid' => $group->courseid, 'name' => $group->name])) {
-                throw new invalid_parameter_exception('Group with the same name already exists in the course');
-            }
-
-            // Now security checks.
-            $context = get_context_instance(CONTEXT_COURSE, $group->courseid);
-            self::validate_context($context);
-            require_capability('moodle/course:managegroups', $context);
-
-            // Finally create the group.
-            $group->id = groups_create_group($group, false);
-            $groups[] = (array) $group;
-        }
-
-        $transaction->allow_commit();
-
-        return $groups;
     }
 }
