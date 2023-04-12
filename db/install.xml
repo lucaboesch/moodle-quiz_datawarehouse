@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="quiz_datawarehouse_query" COMMENT="Queries for Data Warehouse exports.">
+    <TABLE NAME="quiz_datawarehouse_queries" COMMENT="Queries for Data Warehouse exports.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="name" TYPE="char" LENGTH="1024" NOTNULL="true" SEQUENCE="false" COMMENT="Name of the query"/>

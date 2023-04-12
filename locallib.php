@@ -42,15 +42,19 @@ function quiz_datawarehouse_execute_query($sql, $params = null, $limitnum = null
     global $CFG, $DB;
 
     if ($limitnum === null) {
-        $limitnum = get_config('report_customsql', 'querylimitdefault');
+        $limitnum = 0;
     }
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
 
-    foreach ($params as $name => $value) {
-        if (((string) (int) $value) === ((string) $value)) {
-            $params[$name] = (int) $value;
+    if (isset($params)) {
+        foreach ($params as $name => $value) {
+            if (((string) (int) $value) === ((string) $value)) {
+                $params[$name] = (int) $value;
+            }
         }
+    } else {
+        $params = [];
     }
 
     // Note: throws Exception if there is an error.
@@ -60,17 +64,13 @@ function quiz_datawarehouse_execute_query($sql, $params = null, $limitnum = null
 /**
  * A function to substitute the time and user tokens.
  *
- * @param \stdClass $report A report object
+ * @param \stdClass $query A query object
  * @param int $timenow A timestamp
  * @return array|string|string[]
  */
-function quiz_datawarehouse_prepare_sql($report, $timenow) {
+function quiz_datawarehouse_prepare_sql($query, $timenow) {
     global $USER;
-    $sql = $report->querysql;
-    if ($report->runable != 'manual') {
-        list($end, $start) = quiz_datawarehouse_get_starts($report, $timenow);
-        $sql = quiz_datawarehouse_substitute_time_tokens($sql, $start, $end);
-    }
+    $sql = $query->querysql;
     $sql = quiz_datawarehouse_substitute_user_token($sql, $USER->id);
     return $sql;
 }
@@ -117,33 +117,34 @@ function quiz_datawarehouse_get_element_type($name) {
 /**
  * Generate a CSV
  *
- * @param \stdClass $report A report object
+ * @param \stdClass $query A query object
  * @param int $timenow A timestamp
+ * @param object $quiz The quiz
+ * @param cm $cm The course module
+ * @param object $course The course
  * @return mixed|null A timestamp
  * @throws dml_exception
  */
-function quiz_datawarehouse_generate_csv($report, $timenow) {
+function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) {
     global $DB;
     $starttime = microtime(true);
 
-    $sql = quiz_datawarehouse_prepare_sql($report, $timenow);
+    $sql = quiz_datawarehouse_prepare_sql($query, $timenow);
 
-    $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
-    $querylimit  = $report->querylimit ?? get_config('report_customsql', 'querylimitdefault');
-    // Query one extra row, so we can tell if we hit the limit.
-    $rs = quiz_datawarehouse_execute_query($sql, $queryparams, $querylimit + 1);
+    $rs = quiz_datawarehouse_execute_query($sql);
 
     $csvfilenames = array();
     $csvtimestamp = null;
     $count = 0;
+    $filename = quiz_datawarehouse_get_filename($cm, $course, $quiz);
     foreach ($rs as $row) {
         if (!$csvtimestamp) {
-            list($csvfilename, $csvtimestamp) = quiz_datawarehouse_csv_filename($report, $timenow);
+            list($csvfilename, $tempfolder, $csvtimestamp) = quiz_datawarehouse_csv_filename($filename, $timenow);
             $csvfilenames[] = $csvfilename;
 
             if (!file_exists($csvfilename)) {
                 $handle = fopen($csvfilename, 'w');
-                quiz_datawarehouse_start_csv($handle, $row, $report);
+                quiz_datawarehouse_start_csv($handle, $row, $query);
             } else {
                 $handle = fopen($csvfilename, 'a');
             }
@@ -156,49 +157,34 @@ function quiz_datawarehouse_generate_csv($report, $timenow) {
                 $data[$name] = userdate($value, '%F %T');
             }
         }
-        if ($report->singlerow) {
-            array_unshift($data, date('%Y-%m-%d', $timenow));
-        }
         quiz_datawarehouse_write_csv_row($handle, $data);
         $count += 1;
     }
     $rs->close();
 
     if (!empty($handle)) {
-        if ($count > $querylimit) {
-            quiz_datawarehouse_write_csv_row($handle, [REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER]);
+        if (isset($querylimit)) {
+            if ($count > $querylimit) {
+                quiz_datawarehouse_write_csv_row($handle, [REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER]);
+            }
         }
 
         fclose($handle);
     }
 
-    // Update the execution time in the DB.
-    $updaterecord = new stdClass();
-    $updaterecord->id = $report->id;
-    $updaterecord->lastrun = time();
-    $updaterecord->lastexecutiontime = round((microtime(true) - $starttime) * 1000);
-    $DB->update_record('quiz_datawarehouse_queries', $updaterecord);
+    // Now copy the file over to the 'real' files in moodledata.
+    $fs = get_file_storage();
 
-    // Report is runable daily, weekly or monthly.
-    if ($report->runable != 'manual') {
-        if ($csvfilenames) {
-            foreach ($csvfilenames as $csvfilename) {
-                if (!empty($report->emailto)) {
-                    quiz_datawarehouse_email_report($report, $csvfilename);
-                }
-                if (!empty($report->customdir)) {
-                    quiz_datawarehouse_copy_csv_to_customdir($report, $timenow, $csvfilename);
-                }
-            }
-        } else { // If there is no data.
-            if (!empty($report->emailto)) {
-                quiz_datawarehouse_email_report($report);
-            }
-            if (!empty($report->customdir)) {
-                quiz_datawarehouse_copy_csv_to_customdir($report, $timenow);
-            }
-        }
-    }
+    $itemid = get_file_itemid() + 1;
+    $filerecord = [
+        'component' => 'quiz_datawarehouse',
+        'contextid' => \context_system::instance()->id,
+        'filearea' => 'data',
+        'itemid' => $itemid,
+        'filepath' => '/',
+        'filename' => $filename];
+    $fs->create_file_from_pathname($filerecord, $tempfolder . '/' . $filename);
+
     return $csvtimestamp;
 }
 
@@ -215,87 +201,27 @@ function quiz_datawarehouse_is_integer($value) {
 /**
  * Return a CSV filename
  *
- * @param \stdClass $report A report object
+ * @param string $filename The file name
  * @param int $timenow A timestamp
  * @return array
  */
-function quiz_datawarehouse_csv_filename($report, $timenow) {
-    if ($report->runable == 'manual') {
-        return quiz_datawarehouse_temp_csv_name($report->id, $timenow);
-
-    } else if ($report->singlerow) {
-        return quiz_datawarehouse_accumulating_csv_name($report->id);
-
-    } else {
-        list($timestart) = quiz_datawarehouse_get_starts($report, $timenow);
-        return quiz_datawarehouse_scheduled_csv_name($report->id, $timestart);
-    }
+function quiz_datawarehouse_csv_filename($filename, $timenow) {
+    return quiz_datawarehouse_temp_csv_name($filename, $timenow);
 }
 
 /**
  * Return a temporary CSV filename
  *
- * @param int $reportid The report ID
+ * @param string $filename The file name
  * @param int $timestamp A timestamp
  * @return array Some result
  */
-function quiz_datawarehouse_temp_csv_name($reportid, $timestamp) {
+function quiz_datawarehouse_temp_csv_name($filename, $timestamp) {
     global $CFG;
-    $path = 'admin_report_customsql/temp/'.$reportid;
-    make_upload_directory($path);
-    return array($CFG->dataroot.'/'.$path.'/'.date('%Y%m%d-%H%M%S', $timestamp).'.csv',
-                 $timestamp);
-}
-
-/**
- * Return a temporary CSV filename
- *
- * @param int $reportid The report ID
- * @param int $timestart A timestamp
- * @return array Some result
- */
-function quiz_datawarehouse_scheduled_csv_name($reportid, $timestart) {
-    global $CFG;
-    $path = 'admin_report_customsql/'.$reportid;
-    make_upload_directory($path);
-    return array($CFG->dataroot.'/'.$path.'/'.date('%Y%m%d-%H%M%S', $timestart).'.csv',
-                 $timestart);
-}
-
-/**
- * Return an accumulating CSV filename
- *
- * @param int $reportid The report ID
- * @return array Some result
- */
-function quiz_datawarehouse_accumulating_csv_name($reportid) {
-    global $CFG;
-    $path = 'admin_report_customsql/'.$reportid;
-    make_upload_directory($path);
-    return array($CFG->dataroot.'/'.$path.'/accumulate.csv', 0);
-}
-
-/**
- * Return a CSV filename
- *
- * @param \stdClass $report A report object
- * @return array Some result
- */
-function quiz_datawarehouse_get_archive_times($report) {
-    global $CFG;
-    if ($report->runable == 'manual' || $report->singlerow) {
-        return array();
-    }
-    $files = glob($CFG->dataroot.'/admin_report_customsql/'.$report->id.'/*.csv');
-    $archivetimes = array();
-    foreach ($files as $file) {
-        if (preg_match('|/(\d\d\d\d)(\d\d)(\d\d)-(\d\d)(\d\d)(\d\d)\.csv$|', $file, $matches)) {
-            $archivetimes[] = mktime($matches[4], $matches[5], $matches[6], $matches[2],
-                                     $matches[3], $matches[1]);
-        }
-    }
-    rsort($archivetimes);
-    return $archivetimes;
+    // Prepare temp area.
+    $tempfolder = make_temp_directory('quiz_datawarehouse');
+    $tempfile = $tempfolder . '/' . $filename;
+    return [$tempfile, $tempfolder, $timestamp];
 }
 
 /**
@@ -329,22 +255,22 @@ function quiz_datawarehouse_substitute_user_token($sql, $userid) {
  * @return moodle_url the relative url.
  */
 function quiz_datawarehouse_url($relativeurl, $params = []) {
-    return new moodle_url('/report/customsql/' . $relativeurl, $params);
+    return new moodle_url('/mod/quiz/report/datawarehouse/query.php' . $relativeurl, $params);
 }
 
 /**
  * Create the download url for the report.
  *
- * @param int $reportid The reportid.
+ * @param int $queryid The query id.
  * @param array $params Parameters for the url.
  * @return moodle_url The download url.
  */
-function quiz_datawarehouse_downloadurl($reportid, $params = []) {
+function quiz_datawarehouse_downloadurl($queryid, $params = []) {
     $downloadurl = moodle_url::make_pluginfile_url(
         context_system::instance()->id,
         'quiz_datawarehouse',
         'download',
-        $reportid,
+        $queryid,
         null,
         null
     );
@@ -507,14 +433,11 @@ function quiz_datawarehouse_read_csv_row($handle) {
  *
  * @param \stdClass $handle The handle
  * @param \stdClass $firstrow The first row
- * @param \stdClass $report A report object
+ * @param \stdClass $query A query object
  * @throws coding_exception
  */
-function quiz_datawarehouse_start_csv($handle, $firstrow, $report) {
-    $colnames = quiz_datawarehouse_prettify_column_names($firstrow, $report->querysql);
-    if ($report->singlerow) {
-        array_unshift($colnames, get_string('queryrundate', 'report_customsql'));
-    }
+function quiz_datawarehouse_start_csv($handle, $firstrow, $query) {
+    $colnames = quiz_datawarehouse_prettify_column_names($firstrow, $query->querysql);
     quiz_datawarehouse_write_csv_row($handle, $colnames);
 }
 
@@ -554,14 +477,13 @@ function quiz_datawarehouse_validate_users($userids, $capability) {
 /**
  * Get a report name as plain text, for use in places like cron output and email subject lines.
  *
- * @param object $report report settings from the database.
+ * @param object $query query settings from the database.
  * @return string the usable version of the name.
  */
-function quiz_datawarehouse_plain_text_report_name($report): string {
-    return format_string($report->displayname, true,
+function quiz_datawarehouse_plain_text_report_name($query): string {
+    return format_string($query->displayname, true,
             ['context' => context_system::instance()]);
 }
-
 
 /**
  * Gives out the highest itemid for files saved in the quiz_datawarehouse component data file area.
@@ -594,4 +516,30 @@ function write_datawarehouse_file($filerecord, $content) :bool {
     } else {
         return false;
     }
+}
+
+/**
+ * Generates and returns the data warehouse report query result file name.
+ *
+ * @param \stdClass|\cm_info $cm the course-module for this quiz.
+ * @param \stdClass $course the course for this quiz.
+ * @param \quiz $quiz this quiz.
+ * @return string
+ * @throws coding_exception
+ */
+function quiz_datawarehouse_get_filename($cm, $course, $quiz) :string {
+    global $USER;
+    $timezone = \core_date::get_user_timezone_object();
+    $timestamp = time();
+    $calendartype = \core_calendar\type_factory::get_calendar_instance();
+    $timestamparray = $calendartype->timestamp_to_date_array($timestamp, $timezone);
+    $timestamptext = $timestamparray['year'] . "-" .
+        sprintf("%02d", $timestamparray['mon']) . "-" .
+        sprintf("%02d", $timestamparray['mday']) . "-" .
+        sprintf("%02d", $timestamparray['hours']) . "-" .
+        sprintf("%02d", $timestamparray['minutes']) . "-" .
+        sprintf("%02d", $timestamparray['seconds']);
+
+    $queryname = "THE query";
+    return $USER->id . '-' . $quiz->id . '-' . str_replace(' ', '_', $queryname) . '-' . $timestamp . '-' . $timestamptext . '.csv';
 }

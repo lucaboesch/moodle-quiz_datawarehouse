@@ -42,7 +42,7 @@ $string['event:queryenabled'] = 'Quiz data warehouse query was enabled';
 $string['event:queryupdated'] = 'Quiz data warehouse query was updated';
 $string['generate'] = 'Generate';
 $string['generateanotherexport'] = 'Generate another export';
-$string['invalidquery'] = 'Invalid quiz data warehouse query';
+$string['invalidquery'] = 'Invalid quiz data warehouse query id {$a}.';
 $string['manage_queries'] = 'Quiz data warehouse report queries';
 $string['managequeries'] = 'Manage queries';
 $string['name'] = 'Name';
@@ -54,6 +54,7 @@ $string['plugindescription'] = '<p>Checks code against some aspects of the {$a->
 <p>You can enter either a specific PHP file, or to a folder to check all the files it contains.
 Multiple entries are supported (files or folders), one per line.</p>
 <p>To exclude files, a comma separated list of substr matching paths can be used, for example: {$a->excludeexample}. Asterisks are allowed as wildchars at any place.</p>';
+$string['queryfailed'] = 'Error when executing the query: {$a}';
 $string['querysql'] = 'Query';
 $string['quizinfo'] = 'This quiz has the coursemodule id {$a->coursemoduleid}. It is in the course with id {$a->courseid} and the quiz id is {$a->quizid}.';
 $string['setting:supportedversions'] = 'Please note that the following minimum versions of Moodle are required: 4.1.';

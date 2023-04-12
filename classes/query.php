@@ -35,7 +35,7 @@ use core\persistent;
 class query extends persistent {
 
     /** Table name for the persistent. */
-    const TABLE = 'quiz_datawarehouse_query';
+    const TABLE = 'quiz_datawarehouse_queries';
 
     /**
      * Return the definition of the properties of this model.

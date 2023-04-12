@@ -59,7 +59,7 @@ class query_deleted extends base {
      * Initialize the event data.
      */
     protected function init() {
-        $this->data['objecttable'] = 'quiz_datawarehouse_query';
+        $this->data['objecttable'] = 'quiz_datawarehouse_queries';
         $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
@@ -97,7 +97,7 @@ class query_deleted extends base {
      * @return array Mapping of object id.
      */
     public static function get_objectid_mapping() : array {
-        return array('db' => 'quiz_datawarehouse_query', 'restore' => 'quiz_datawarehouse_query');
+        return array('db' => 'quiz_datawarehouse_queries', 'restore' => 'quiz_datawarehouse_queries');
     }
 
     /**
