@@ -397,11 +397,13 @@ function quiz_datawarehouse_write_csv_row($handle, $data) {
     global $CFG;
     $escapeddata = array();
     foreach ($data as $value) {
-        $value = str_replace('%%WWWROOT%%', $CFG->wwwroot, $value);
-        $value = str_replace('%%Q%%', '?', $value);
-        $value = str_replace('%%C%%', ':', $value);
-        $value = str_replace('%%S%%', ';', $value);
-        $escapeddata[] = '"'.str_replace('"', '""', $value).'"';
+        if (isset($value)) {
+            $value = str_replace('%%WWWROOT%%', $CFG->wwwroot, $value);
+            $value = str_replace('%%Q%%', '?', $value);
+            $value = str_replace('%%C%%', ':', $value);
+            $value = str_replace('%%S%%', ';', $value);
+            $escapeddata[] = '"'.str_replace('"', '""', $value).'"';
+        }
     }
     fwrite($handle, implode(',', $escapeddata)."\r\n");
 }
@@ -542,4 +544,17 @@ function quiz_datawarehouse_get_filename($cm, $course, $quiz) :string {
 
     $queryname = "THE query";
     return $USER->id . '-' . $quiz->id . '-' . str_replace(' ', '_', $queryname) . '-' . $timestamp . '-' . $timestamptext . '.csv';
+}
+
+/**
+ * Return the queries ids, names and descriptions in the order from the database.
+ *
+ * @return array An array of queries id, names and descriptions.
+ */
+function quiz_datawarehouse_get_queries() {
+    global $DB;
+    return $DB->get_records_sql("
+            SELECT qdq.id, qdq.name, qdq.description
+              FROM {quiz_datawarehouse_queries} qdq
+          ORDER BY sortorder ASC", []);
 }

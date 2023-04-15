@@ -53,7 +53,7 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
         $data = $mform->get_data();
 
         if ($data) {
-            $data->queryid = 1; // This is temporary until the right query id is passed.
+            $data->queryid = 3; // This is temporary until the right query id is passed.
 
             // The report generation has been triggered.
             if (isset($data->queryid)) {

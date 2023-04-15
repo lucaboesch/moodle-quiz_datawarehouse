@@ -82,6 +82,14 @@ class quiz_datawarehouse_settings_form extends moodleform {
         $mform->addElement('hidden', 'mode', '');
         $mform->setType('mode', PARAM_ALPHA);
 
-        $mform->addElement('submit', 'downloadfiles', get_string('generate', 'quiz_datawarehouse'));
+        $options = [];
+        $queries = quiz_datawarehouse_get_queries();
+        foreach ($queries as $query) {
+            $options[$query->id] = format_string($query->name, false, ["context" => \context_system::instance()]);
+        }
+        file_put_contents('/Users/luca/Desktop/log0.txt', json_encode($options));
+        $mform->addElement('select', 'queryid', get_string('querytorun', 'quiz_datawarehouse'), $options);
+
+        $mform->addElement('submit', 'downloadfiles', get_string('execute', 'quiz_datawarehouse'));
     }
 }
