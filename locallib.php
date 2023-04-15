@@ -136,7 +136,7 @@ function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) 
     $csvfilenames = array();
     $csvtimestamp = null;
     $count = 0;
-    $filename = quiz_datawarehouse_get_filename($cm, $course, $quiz);
+    $filename = quiz_datawarehouse_get_filename($cm, $course, $quiz, $query);
     foreach ($rs as $row) {
         if (!$csvtimestamp) {
             list($csvfilename, $tempfolder, $csvtimestamp) = quiz_datawarehouse_csv_filename($filename, $timenow);
@@ -526,10 +526,11 @@ function write_datawarehouse_file($filerecord, $content) :bool {
  * @param \stdClass|\cm_info $cm the course-module for this quiz.
  * @param \stdClass $course the course for this quiz.
  * @param \quiz $quiz this quiz.
+ * @param \stdClass $query A query object
  * @return string
  * @throws coding_exception
  */
-function quiz_datawarehouse_get_filename($cm, $course, $quiz) :string {
+function quiz_datawarehouse_get_filename($cm, $course, $quiz, stdClass $query) :string {
     global $USER;
     $timezone = \core_date::get_user_timezone_object();
     $timestamp = time();
@@ -542,7 +543,7 @@ function quiz_datawarehouse_get_filename($cm, $course, $quiz) :string {
         sprintf("%02d", $timestamparray['minutes']) . "-" .
         sprintf("%02d", $timestamparray['seconds']);
 
-    $queryname = "THE query";
+    $queryname = $query->name;
     return $USER->id . '-' . $quiz->id . '-' . str_replace(' ', '_', $queryname) . '-' . $timestamp . '-' . $timestamptext . '.csv';
 }
 
