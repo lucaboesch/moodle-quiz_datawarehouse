@@ -35,15 +35,22 @@
  * @return bool Returns false if we don't find a file.
  */
 function quiz_datawarehouse_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []): bool {
+
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
     }
 
     $fs = get_file_storage();
-    $file = $fs->get_file($context->id, 'quiz_datawarehouse', $filearea, $args[0], '/', $args[1]);
+    // Itemid is the thing after the first dash in the args only parameter.
+    $argsparts = preg_split('/-/', $args[0]);
+    $itemid = $argsparts[1];
+
+    $file = $fs->get_file(1, 'quiz_datawarehouse', 'data', $itemid, '/', $args[0]);
+
     if (!$file) {
         return false; // No such file.
     }
+
     send_stored_file($file, null, 0, $forcedownload, $options);
     return true;
 }

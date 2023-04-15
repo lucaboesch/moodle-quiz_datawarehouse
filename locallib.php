@@ -129,6 +129,8 @@ function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) 
     global $DB;
     $starttime = microtime(true);
 
+    $itemid = get_file_itemid() + 1;
+
     $sql = quiz_datawarehouse_prepare_sql($query, $timenow);
 
     $rs = quiz_datawarehouse_execute_query($sql);
@@ -136,7 +138,7 @@ function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) 
     $csvfilenames = array();
     $csvtimestamp = null;
     $count = 0;
-    $filename = quiz_datawarehouse_get_filename($cm, $course, $quiz, $query);
+    $filename = quiz_datawarehouse_get_filename($cm, $course, $quiz, $query, $itemid);
     foreach ($rs as $row) {
         if (!$csvtimestamp) {
             list($csvfilename, $tempfolder, $csvtimestamp) = quiz_datawarehouse_csv_filename($filename, $timenow);
@@ -175,7 +177,6 @@ function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) 
     // Now copy the file over to the 'real' files in moodledata.
     $fs = get_file_storage();
 
-    $itemid = get_file_itemid() + 1;
     $filerecord = [
         'component' => 'quiz_datawarehouse',
         'contextid' => \context_system::instance()->id,
@@ -527,10 +528,10 @@ function write_datawarehouse_file($filerecord, $content) :bool {
  * @param \stdClass $course the course for this quiz.
  * @param \quiz $quiz this quiz.
  * @param \stdClass $query A query object
- * @return string
+ * @param string $itemid The item id
  * @throws coding_exception
  */
-function quiz_datawarehouse_get_filename($cm, $course, $quiz, stdClass $query) :string {
+function quiz_datawarehouse_get_filename($cm, $course, $quiz, stdClass $query, string $itemid) :string {
     global $USER;
     $timezone = \core_date::get_user_timezone_object();
     $timestamp = time();
@@ -544,7 +545,7 @@ function quiz_datawarehouse_get_filename($cm, $course, $quiz, stdClass $query) :
         sprintf("%02d", $timestamparray['seconds']);
 
     $queryname = $query->name;
-    return $USER->id . '-' . $quiz->id . '-' . str_replace(' ', '_', $queryname) . '-' . $timestamp . '-' . $timestamptext . '.csv';
+    return $USER->id . '-' . $itemid . '-' . $quiz->id . '-' . str_replace(' ', '_', $queryname) . '-' . $timestamp . '-' . $timestamptext . '.csv';
 }
 
 /**
