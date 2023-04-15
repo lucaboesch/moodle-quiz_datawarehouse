@@ -545,7 +545,8 @@ function quiz_datawarehouse_get_filename($cm, $course, $quiz, stdClass $query, s
         sprintf("%02d", $timestamparray['seconds']);
 
     $queryname = $query->name;
-    return $USER->id . '-' . $itemid . '-' . $quiz->id . '-' . str_replace(' ', '_', $queryname) . '-' . $timestamp . '-' . $timestamptext . '.csv';
+    return $USER->id . '-' . $itemid . '-' . $quiz->id . '-' . str_replace(' ', '_', $queryname) . '-' . $timestamp . '-' .
+        $timestamptext . '.csv';
 }
 
 /**

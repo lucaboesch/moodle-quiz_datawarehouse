@@ -30,8 +30,10 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_heading(
         'quiz_datawarehouse/supportedversions',
         '',
-        $OUTPUT->notification(get_string('setting:supportedversions', 'quiz_datawarehouse'), 'warning')));
+        $OUTPUT->notification(get_string('setting:supportedversions', 'quiz_datawarehouse'), 'warning') .
+        $OUTPUT->box(get_string('setting:plugininstruction', 'quiz_datawarehouse'))));
     // TODO: print the session token.
+
 }
 
 if (has_capability('quiz/datawarehouse:managequeries', context_system::instance())) {
