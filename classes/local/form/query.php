@@ -39,6 +39,8 @@ class query extends \core\form\persistent {
      * Form definition.
      */
     protected function definition() {
+        global $CFG;
+
         $mform = $this->_form;
 
         $mform->addElement('text', 'name', get_string('name', 'quiz_datawarehouse'));
@@ -54,6 +56,9 @@ class query extends \core\form\persistent {
 
         $mform->addElement('selectyesno', 'enabled', get_string('enabled', 'quiz_datawarehouse'));
         $mform->setType('enabled', PARAM_INT);
+
+        $mform->addElement('static', 'note', get_string('note', 'quiz_datawarehouse'),
+            get_string('querynote', 'quiz_datawarehouse', $CFG->wwwroot));
 
         $this->add_action_buttons();
 

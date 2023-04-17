@@ -48,11 +48,19 @@ $string['managequeries'] = 'Manage queries';
 $string['name'] = 'Name';
 $string['namerequired'] = 'A name is required';
 $string['newquery'] = 'New query';
+$string['note'] = 'Notes';
 $string['pluginname'] = 'Quiz data warehouse export';
 $string['plugindescription'] = '<p>Runs an administrator pre-defined query against the Moodle database.</p>
 <p>Select the query you want to run, then press the "Execute" button.</p>
 <p>Shortly after then, the query result will be retrieavable by the "Quiz report datawarehouse functionalities" web service.</p>
 <p>It is probably your automated data warehouse that is going to fetch the result which after ought to be available in your data mart.</p>';
+$string['querynote'] = '<ul>
+<li>The token <code>%%COURSEID%%</code> in the query will be replaced with the course id of the course the report is called in, before the query is executed. The same happens with <code>%%CMID%%</code> that will be replaced with the course module id.</li>
+<li>You cannot use the characters <code>:</code>, <code>;</code> or <code>?</code> in strings in your query.<ul>
+    <li>If you need them in output data (such as when outputting URLs), you can use the tokens <code>%%C%%</code>, <code>%%S%%</code> and <code>%%Q%%</code> respectively.</li>
+    <li>If you need them in input data (such as in a regular expression or when querying for the characters), you will need to use a database function to get the characters and concatenate them yourself. In Postgres, respectively these are CHR(58), CHR(59) and CHR(63); in MySQL CHAR(58), CHAR(59) and CHAR(63).</li>
+</ul></li>
+</ul>';
 $string['setting:plugininstruction'] = '<p>The quiz database report is a three fold plug-in consisting of a admin backend, a frontend quiz report and backend web services.<br/>
 In the site administration, administrators define queries that selected user can run.<br/>
 The user interface to run those queries is found under the quiz reports.<br/>

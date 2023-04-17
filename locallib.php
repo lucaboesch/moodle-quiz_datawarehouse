@@ -66,12 +66,17 @@ function quiz_datawarehouse_execute_query($sql, $params = null, $limitnum = null
  *
  * @param \stdClass $query A query object
  * @param int $timenow A timestamp
+ * @param object $quiz The quiz
+ * @param cm $cm The course module
+ * @param object $course The course
  * @return array|string|string[]
  */
-function quiz_datawarehouse_prepare_sql($query, $timenow) {
+function quiz_datawarehouse_prepare_sql($query, $timenow, object $quiz, $cm, object $course) {
     global $USER;
     $sql = $query->querysql;
     $sql = quiz_datawarehouse_substitute_user_token($sql, $USER->id);
+    $sql = quiz_datawarehouse_substitute_course_module_id($sql, $cm->id);
+    $sql = quiz_datawarehouse_substitute_course_id($sql, $course->id);
     return $sql;
 }
 
@@ -131,7 +136,7 @@ function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) 
 
     $itemid = get_file_itemid() + 1;
 
-    $sql = quiz_datawarehouse_prepare_sql($query, $timenow);
+    $sql = quiz_datawarehouse_prepare_sql($query, $timenow, $quiz, $cm, $course);
 
     $rs = quiz_datawarehouse_execute_query($sql);
 
@@ -246,6 +251,27 @@ function quiz_datawarehouse_substitute_time_tokens($sql, $start, $end) {
  */
 function quiz_datawarehouse_substitute_user_token($sql, $userid) {
     return str_replace('%%USERID%%', $userid, $sql);
+}
+/**
+ * Substitute course ids in a SQL string.
+ *
+ * @param string $sql The SQL query.
+ * @param int $courseid A user id
+ * @return array|string|string[] Some result
+ */
+function quiz_datawarehouse_substitute_course_id($sql, $courseid) {
+    return str_replace('%%COURSEID%%', $courseid, $sql);
+}
+
+/**
+ * Substitute course module ids in a SQL string.
+ *
+ * @param string $sql The SQL query.
+ * @param int $cmid A course module id
+ * @return array|string|string[] Some result
+ */
+function quiz_datawarehouse_substitute_course_module_id($sql, $cmid) {
+    return str_replace('%%CMID%%', $cmid, $sql);
 }
 
 /**
