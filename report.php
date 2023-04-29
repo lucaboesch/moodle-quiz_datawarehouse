@@ -80,11 +80,13 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
                 $url = new moodle_url($baseurl, array('id' => $cm->id, 'mode' => 'datawarehouse'));
                 echo html_writer::tag('div', html_writer::link($url, get_string('generateanotherexport', 'quiz_datawarehouse')),
                     array('class' => 'generateanotherexport'));
+
                 $a = new stdClass();
                 $a->coursemoduleid = $cm->id;
                 $a->quizid = $quiz->id;
                 $a->courseid = $course->id;
-                echo html_writer::tag('div', html_writer::link($url, get_string('quizinfo', 'quiz_datawarehouse', $a)),
+
+                echo html_writer::tag('div', get_string('quizinfo', 'quiz_datawarehouse', $a),
                     array('class' => 'generateanotherexport'));
             }
 
@@ -99,6 +101,14 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
             $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
             echo html_writer::tag('div', get_string('plugindescription', 'quiz_datawarehouse', $a),
                 array('class' => 'plugindescription'));
+
+            $a = new stdClass();
+            $a->coursemoduleid = $cm->id;
+            $a->quizid = $quiz->id;
+            $a->courseid = $course->id;
+
+            echo html_writer::tag('div', get_string('quizinfo', 'quiz_datawarehouse', $a),
+                array('class' => 'generateanotherexport mb-3'));
 
             $formdata       = new stdClass;
             $formdata->mode = optional_param('mode', 'datawarehouse', PARAM_ALPHA);

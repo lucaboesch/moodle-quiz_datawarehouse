@@ -52,7 +52,7 @@ $string['note'] = 'Notes';
 $string['pluginname'] = 'Quiz data warehouse export';
 $string['plugindescription'] = '<p>Runs an administrator pre-defined query against the Moodle database.</p>
 <p>Select the query you want to run, then press the "Execute" button.</p>
-<p>Shortly after then, the query result will be retrieavable by the "Quiz report datawarehouse functionalities" web service.</p>
+<p>Shortly after then, the query result will be retrievable by the "Quiz report datawarehouse functionalities" web service.</p>
 <p>It is probably your automated data warehouse that is going to fetch the result which after ought to be available in your data mart.</p>';
 $string['querynote'] = '<ul>
 <li>The token <code>%%COURSEID%%</code> in the query will be replaced with the course id of the course the report is called in, before the query is executed. The same happens with <code>%%CMID%%</code> that will be replaced with the course module id.</li>
