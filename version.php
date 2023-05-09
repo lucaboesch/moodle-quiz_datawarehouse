@@ -29,3 +29,6 @@ $plugin->release = '0.1.2';
 $plugin->version = 2023041001;
 $plugin->requires = 2022112800;
 $plugin->maturity = MATURITY_ALPHA;
+$plugin->dependencies = [
+        'webservice_restful' => 2018102100,
+];

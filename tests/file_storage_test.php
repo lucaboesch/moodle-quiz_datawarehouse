@@ -40,7 +40,7 @@ class file_storage_test extends \advanced_testcase {
 
     /**
      * Tests saving and retrieving in the file area.
-     *
+     * @runInSeparateProcess
      * @covers \quiz_datawarehouse\local\form\query
      */
     public function test_file_area() {
