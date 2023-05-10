@@ -1,7 +1,7 @@
 /**
- * Query management code.
+ * Backend management code.
  *
- * @module      quiz_datawarehouse/managequeries
+ * @module      quiz_datawarehouse/managebackends
  * @copyright   2023 Luca Bösch <luca.boesch@bfh.ch>
  */
 define(
@@ -9,21 +9,21 @@ define(
     function($, ajax, str, notification) {
         var manager = {
             /**
-             * Confirm removal of the specified query.
+             * Confirm removal of the specified backend.
              *
-             * @method removeQuery
+             * @method removeBackend
              * @param {EventFacade} e The EventFacade
              */
-            removeQuery: function(e) {
+            removeBackend: function(e) {
                 e.preventDefault();
                 var targetUrl = $(e.currentTarget).attr('href');
                 str.get_strings([
                     {
-                        key:        'confirmqueryremovaltitle',
+                        key:        'confirmbackendremovaltitle',
                         component:  'quiz_datawarehouse'
                     },
                     {
-                        key:        'confirmqueryremovalquestion',
+                        key:        'confirmbackendremovalquestion',
                         component:  'quiz_datawarehouse'
                     },
                     {
@@ -46,18 +46,18 @@ define(
             },
 
             /**
-             * Setup the query management UI.
+             * Setup the backends management UI.
              *
              * @method setup
              */
             setup: function() {
-                $('body').delegate('[data-action="delete"]', 'click', manager.removeQuery);
+                $('body').delegate('[data-action="delete"]', 'click', manager.removeBackend);
             }
         };
 
-        return /** @alias module:quiz_datawarehouse/managequeries */ {
+        return /** @alias module:quiz_datawarehouse/managebackends */ {
             /**
-             * Setup the query management UI.
+             * Setup the backend management UI.
              *
              * @method setup
              */

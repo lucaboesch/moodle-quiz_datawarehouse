@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+
 global $CFG;
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
@@ -190,6 +191,32 @@ function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) 
         'filepath' => '/',
         'filename' => $filename];
     $fs->create_file_from_pathname($filerecord, $tempfolder . '/' . $filename);
+
+    $url = $DB->get_field('quiz_datawarehouse_backends', 'url', array('id' => 1));
+    // Initiate cURL object.
+    $curl = curl_init();
+    // Set your URL.
+    curl_setopt($curl, CURLOPT_URL, $url . $filename);
+    // Indicate, that you plan to upload a file.
+    curl_setopt($curl, CURLOPT_UPLOAD, true);
+    // Indicate your protocol.
+    curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+    // Set flags for transfer.
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_BINARYTRANSFER, 1);
+    // Disable header (optional).
+    curl_setopt($curl, CURLOPT_HEADER, false);
+    // Set HTTP method to PUT.
+    curl_setopt($curl, CURLOPT_PUT, 1);
+    // Indicate the file you want to upload.
+    curl_setopt($curl, CURLOPT_INFILE, fopen($tempfolder . '/' . $filename, 'rb'));
+    // Indicate the size of the file (it does not look like this is mandatory, though).
+    curl_setopt($curl, CURLOPT_INFILESIZE, filesize($tempfolder . '/' . $filename));
+    // Only use below option on TEST environment if you have a self-signed certificate!!! On production this can cause security
+    // issues.
+    // curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    // Execute.
+    curl_exec($curl);
 
     return $csvtimestamp;
 }

@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 global $ADMIN;
 
+
 if ($hassiteconfig) {
 
     $settings->add(new admin_setting_heading(
@@ -32,8 +33,18 @@ if ($hassiteconfig) {
         '',
         $OUTPUT->notification(get_string('setting:supportedversions', 'quiz_datawarehouse'), 'warning') .
         $OUTPUT->box(get_string('setting:plugininstruction', 'quiz_datawarehouse'))));
-    // TODO: print the session token.
 
+}
+
+if (has_capability('quiz/datawarehouse:managebackends', context_system::instance())) {
+    $ADMIN->add('modsettingsquizcat',
+        new admin_externalpage(
+            'quiz_datawarehouse/backend',
+            get_string('manage_backends', 'quiz_datawarehouse'),
+            new moodle_url('/mod/quiz/report/datawarehouse/backend.php'),
+            'quiz/datawarehouse:managebackends'
+        )
+    );
 }
 
 if (has_capability('quiz/datawarehouse:managequeries', context_system::instance())) {

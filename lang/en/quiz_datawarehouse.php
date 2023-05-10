@@ -22,17 +22,23 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addbackend'] = 'Add new backend';
 $string['addquery'] = 'Add new query';
+$string['alloweduser'] = 'Allowed user';
 $string['cantdelete'] = 'The query can\'t be deleted.';
 $string['cantedit'] = 'The query can\'t be edited.';
+$string['confirmbackendremovalquestion'] = 'Are you sure you want to remove this backend?';
 $string['confirmqueryremovalquestion'] = 'Are you sure you want to remove this query?';
+$string['confirmbackendremovaltitle'] = 'Confirm backend removal?';
 $string['confirmqueryremovaltitle'] = 'Confirm query removal?';
 $string['datawarehouse'] = 'Data warehouse export';
+$string['datawarehouse:managebackends'] = 'Manage data warehouse report backends';
 $string['datawarehouse:managequeries'] = 'Manage data warehouse report queries';
 $string['datawarehouse:view'] = 'View data warehouse report';
 $string['datawarehouse:viewfiles'] = 'View data warehouse report files';
 $string['datawarehousereport'] = 'Quiz data warehouse report';
 $string['description'] = 'Description';
+$string['editbackend'] = 'Edit backend';
 $string['editquery'] = 'Edit query';
 $string['enabled'] = 'Enabled';
 $string['event:querycreated'] = 'Quiz data warehouse query was created';
@@ -43,12 +49,16 @@ $string['event:queryupdated'] = 'Quiz data warehouse query was updated';
 $string['execute'] = 'Execute';
 $string['generateanotherexport'] = 'Generate another export';
 $string['invalidquery'] = 'Invalid quiz data warehouse query id {$a}.';
+$string['manage_backends'] = 'Quiz data warehouse report backends';
 $string['manage_queries'] = 'Quiz data warehouse report queries';
+$string['managebackends'] = 'Manage backends';
 $string['managequeries'] = 'Manage queries';
 $string['name'] = 'Name';
 $string['namerequired'] = 'A name is required';
+$string['newbackend'] = 'New backend';
 $string['newquery'] = 'New query';
 $string['note'] = 'Notes';
+$string['password'] = 'Password';
 $string['pluginname'] = 'Quiz data warehouse export';
 $string['plugindescription'] = '<p>Runs an administrator pre-defined query against the Moodle database.</p>
 <p>Select the query you want to run, then press the "Execute" button.</p>
@@ -85,7 +95,9 @@ $string['querysql'] = 'Query';
 $string['querytorun'] = 'Query to run';
 $string['quizinfo'] = 'This quiz has the coursemodule id {$a->coursemoduleid}. It is in the course with id {$a->courseid} and the quiz id is {$a->quizid}.';
 $string['setting:supportedversions'] = 'Please note that the following minimum versions of Moodle are required: 4.1.';
+$string['url'] = 'URL';
 $string['used'] = 'In use';
+$string['username'] = 'Username';
 
 // PRIVACY.
 $string['privacy:metadata'] = 'The quiz datawarehouse plugin does not store any personal data about any user.';
