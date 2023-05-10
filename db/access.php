@@ -46,5 +46,12 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         ),
     ),
+    'quiz/datawarehouse:managebackends' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        ),
+    ),
 );
 

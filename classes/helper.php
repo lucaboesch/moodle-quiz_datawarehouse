@@ -65,4 +65,16 @@ class helper {
 
         return $result;
     }
+
+    /**
+     * Validate quiz report datawarehouse backend string.
+     *
+     * @param string $backend
+     * @return bool
+     */
+    public static function is_valid_quiz_datawarehouse_backend(string $backend) : bool {
+        $result = true;
+
+        return $result;
+    }
 }
