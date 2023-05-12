@@ -25,6 +25,7 @@
 $string['addbackend'] = 'Add new backend';
 $string['addquery'] = 'Add new query';
 $string['alloweduser'] = 'Allowed user';
+$string['backendtosend'] = 'Backend to send the result to';
 $string['cantdelete'] = 'The query can\'t be deleted.';
 $string['cantedit'] = 'The query can\'t be edited.';
 $string['confirmbackendremovalquestion'] = 'Are you sure you want to remove this backend?';

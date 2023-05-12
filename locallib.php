@@ -124,6 +124,7 @@ function quiz_datawarehouse_get_element_type($name) {
  * Generate a CSV
  *
  * @param \stdClass $query A query object
+ * @param \stdClass $backend A backend object
  * @param int $timenow A timestamp
  * @param object $quiz The quiz
  * @param cm $cm The course module
@@ -131,7 +132,7 @@ function quiz_datawarehouse_get_element_type($name) {
  * @return mixed|null A timestamp
  * @throws dml_exception
  */
-function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) {
+function quiz_datawarehouse_generate_csv($query, $backend, $timenow, $quiz, $cm, $course) {
     global $DB;
     $starttime = microtime(true);
 
@@ -196,31 +197,37 @@ function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) 
         'filename' => $filename];
     $fs->create_file_from_pathname($filerecord, $tempfolder . '/' . $filename);
 
-    $url = $DB->get_field('quiz_datawarehouse_backends', 'url', array('id' => 1));
-    // Initiate cURL object.
-    $curl = curl_init();
-    // Set your URL.
-    curl_setopt($curl, CURLOPT_URL, $url . $filename);
-    // Indicate, that you plan to upload a file.
-    curl_setopt($curl, CURLOPT_UPLOAD, true);
-    // Indicate your protocol.
-    curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
-    // Set flags for transfer.
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_BINARYTRANSFER, 1);
-    // Disable header (optional).
-    curl_setopt($curl, CURLOPT_HEADER, false);
-    // Set HTTP method to PUT.
-    curl_setopt($curl, CURLOPT_PUT, 1);
-    // Indicate the file you want to upload.
-    curl_setopt($curl, CURLOPT_INFILE, fopen($tempfolder . '/' . $filename, 'rb'));
-    // Indicate the size of the file (it does not look like this is mandatory, though).
-    curl_setopt($curl, CURLOPT_INFILESIZE, filesize($tempfolder . '/' . $filename));
-    // Only use below option on TEST environment if you have a self-signed certificate!!! On production this can cause security
-    // issues.
-    // curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    // Execute.
-    curl_exec($curl);
+    if ($backend->username == '' && $backend->password == '' ) {
+        // PUT to a Pre-Authenticated Requests enabled Oracle Object Storage Bucket.
+        $url = $DB->get_field('quiz_datawarehouse_backends', 'url', array('id' => $backend->id));
+        // Initiate cURL object.
+        $curl = curl_init();
+        // Set your URL.
+        curl_setopt($curl, CURLOPT_URL, $url . $filename);
+        // Indicate, that you plan to upload a file.
+        curl_setopt($curl, CURLOPT_UPLOAD, true);
+        // Indicate your protocol.
+        curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+        // Set flags for transfer.
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_BINARYTRANSFER, 1);
+        // Disable header (optional).
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        // Set HTTP method to PUT.
+        curl_setopt($curl, CURLOPT_PUT, 1);
+        // Indicate the file you want to upload.
+        curl_setopt($curl, CURLOPT_INFILE, fopen($tempfolder . '/' . $filename, 'rb'));
+        // Indicate the size of the file (it does not look like this is mandatory, though).
+        curl_setopt($curl, CURLOPT_INFILESIZE, filesize($tempfolder . '/' . $filename));
+        // Only use below option on TEST environment if you have a self-signed certificate!!! On production this can cause security
+        // issues.
+        // curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        // Execute.
+        curl_exec($curl);
+    } else {
+        // REST to a REST enabled table in an Oracle Autonomous Data Warehouse.
+        $url = $DB->get_field('quiz_datawarehouse_backends', 'url', array('id' => $backend->id));
+    }
 
     return $csvtimestamp;
 }
@@ -617,4 +624,18 @@ function quiz_datawarehouse_get_queries() {
             SELECT qdq.id, qdq.name, qdq.description
               FROM {quiz_datawarehouse_queries} qdq
           ORDER BY sortorder ASC", []);
+}
+
+/**
+ * Return the backends ids, names and descriptions in the order from the database.
+ *
+ * @return array An array of backends id, names and descriptions.
+ */
+function quiz_datawarehouse_get_backends() {
+    global $DB;
+    return $DB->get_records_sql("
+            SELECT qdb.id, qdb.name, qdb.description
+              FROM {quiz_datawarehouse_backends} qdb
+          ORDER BY sortorder ASC", []);
+    // TODO: Bring in user id.
 }

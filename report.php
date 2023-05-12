@@ -56,13 +56,14 @@ class quiz_datawarehouse_report extends quiz_attempts_report {
             // The report generation has been triggered.
             if (isset($data->queryid)) {
                 $query = $DB->get_record('quiz_datawarehouse_queries', ['id' => $data->queryid]);
+                $backend = $DB->get_record('quiz_datawarehouse_backends', ['id' => $data->backendid]);
                 if (!$query) {
                     throw new moodle_exception('invalidquery', 'quiz_datawarehouse', quiz_datawarehouse_url('query.php'),
                         $data->queryid);
                 }
                 try {
                     // Create a file and save it.
-                    $csvtimestamp = quiz_datawarehouse_generate_csv($query, time(), $quiz, $cm, $course);
+                    $csvtimestamp = quiz_datawarehouse_generate_csv($query, $backend, time(), $quiz, $cm, $course);
                 } catch (Exception $e) {
                     throw new moodle_exception('queryfailed', 'quiz_datawarehouse', quiz_datawarehouse_url('query.php'),
                         $e->getMessage());

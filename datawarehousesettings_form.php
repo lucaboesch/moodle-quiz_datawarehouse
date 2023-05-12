@@ -89,6 +89,17 @@ class quiz_datawarehouse_settings_form extends moodleform {
         }
         $mform->addElement('select', 'queryid', get_string('querytorun', 'quiz_datawarehouse'), $options);
 
+        $options = [];
+        $backends = quiz_datawarehouse_get_backends();
+        if (count($backends) > 1) {
+            foreach ($backends as $backend) {
+                $options[$backend->id] = format_string($backend->name, false, ["context" => \context_system::instance()]);
+            }
+            $mform->addElement('select', 'backendid', get_string('backendtosend', 'quiz_datawarehouse'), $options);
+        } else {
+            $mform->addElement('hidden', 'backendid', $backend->id);
+            $mform->setType('backendid', PARAM_INT);
+        }
         $mform->addElement('submit', 'downloadfiles', get_string('execute', 'quiz_datawarehouse'));
     }
 }
