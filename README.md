@@ -1,6 +1,9 @@
 # moodle-quiz_datawarehouse
 ![](https://github.com/lucaboesch/moodle-quiz_datawarehouse/actions/workflows/moodle-plugin-ci.yml/badge.svg)
 
+
+[![Moodle Plugin CI](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/workflows/Moodle%20Plugin%20CI/badge.svg?branch=master)](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/actions?query=workflow%3A%22Moodle+Plugin+CI%22+branch%3Amaster)
+
 My MSc Thesis project
 
 The quiz database report is a three fold plug-in consisting of a admin backend, a frontend quiz report and backend web services.  

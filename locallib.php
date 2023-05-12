@@ -183,6 +183,10 @@ function quiz_datawarehouse_generate_csv($query, $timenow, $quiz, $cm, $course) 
     // Now copy the file over to the 'real' files in moodledata.
     $fs = get_file_storage();
 
+    if (!isset($tempfolder)) {
+        $tempfolder = make_temp_directory('quiz_datawarehouse');
+    }
+
     $filerecord = [
         'component' => 'quiz_datawarehouse',
         'contextid' => \context_system::instance()->id,
@@ -250,7 +254,6 @@ function quiz_datawarehouse_csv_filename($filename, $timenow) {
  * @return array Some result
  */
 function quiz_datawarehouse_temp_csv_name($filename, $timestamp) {
-    global $CFG;
     // Prepare temp area.
     $tempfolder = make_temp_directory('quiz_datawarehouse');
     $tempfile = $tempfolder . '/' . $filename;
