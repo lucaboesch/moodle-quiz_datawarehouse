@@ -42,10 +42,10 @@ class query_updated extends base {
      * Easier for consumers of this class to know what data must be supplied and observers can have more trust in event data.
      *
      * @param \quiz_datawarehouse\query $query Quiz data warehouse query.
-     * @param context_system $context Context system.
+     * @param \context_system $context Context system.
      * @return base
      */
-    public static function create_strict(\quiz_datawarehouse\query $query, context_system $context) : base {
+    public static function create_strict(\quiz_datawarehouse\query $query, \context_system $context) : base {
         global $USER;
         $tid = $query->get('id');
 
