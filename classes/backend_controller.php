@@ -259,7 +259,7 @@ class backend_controller {
                 $this->header($this->get_new_heading());
             } else {
                 if (!$instance->can_delete()) {
-                    notification::warning(get_string('cantedit', 'quiz_datawarehouse'));
+                    notification::warning(get_string('canteditbackend', 'quiz_datawarehouse'));
                 }
                 $this->header($this->get_edit_heading());
             }
